@@ -1,0 +1,20 @@
+{
+  "name": "rl-demo-elm",
+  "version": "0.0.1",
+  "description": "Elm demo for simple reinforecemnt learning agent-environment simulation",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "elm",
+    "demo",
+    "RL",
+    "agent"
+  ],
+  "author": "Max Ermakov",
+  "license": "ISC",
+  "devDependencies": {
+    "elm-live": "^4.0.2"
+  }
+}

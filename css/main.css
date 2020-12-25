@@ -1,0 +1,25 @@
+
+#main {
+    display: grid;
+    grid-template-areas:
+    'field field controls'
+    'info info info';
+}
+
+#field {
+    grid-area: field;
+}
+
+#controls {
+    grid-area: controls;
+}
+
+#info {
+    grid-area: info;
+}
+
+.contentblob {
+    padding: 20% 20%;
+    margin: 5px;
+    border: 2px solid grey;
+}
