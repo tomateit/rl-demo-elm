@@ -1,55 +1,97 @@
-module Main exposing (..)
+module Main exposing (main)
 import Browser
-import Html exposing (Html, button, div, text, input, label)
+import Html exposing (Html, button, div, text, input, label, ul, li)
 import Html.Events exposing (onClick, onInput)
 import Html.Attributes exposing (attribute, class, id, type_, value)
 import Json.Encode exposing (encode)
 
-main =
-  Browser.sandbox { init = init, update = update, view = view }
-
-
 
 -- MODEL
 type alias Model = {
-  fieldWidth: String,
-  fieldHeight: String
+  fieldWidth: Int,
+  fieldHeight: Int
   }
 
-init : Model
-init = {
-  fieldHeight = "4",
-  fieldWidth = "6"
+initialModel : Model
+initialModel = {
+  fieldHeight = 4,
+  fieldWidth = 6
   }
 
-type Msg = UpdateFieldWidth String 
-  | UpdateFieldHeight String
+type Msg = IncrementFieldWidth 
+  | DecrementFieldWidth
+  | IncrementFieldHeight
+  | DecrementFieldHeight
+
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    UpdateFieldWidth newWidth ->
-      { model | fieldWidth = newWidth }
-    UpdateFieldHeight newHeight ->
-      { model | fieldHeight = newHeight }
+    IncrementFieldWidth ->
+      if model.fieldWidth > 30 then model
+      else { model | fieldWidth = model.fieldWidth + 1 }
+    DecrementFieldWidth ->
+      if model.fieldWidth == 1 then model
+      else { model | fieldWidth = model.fieldWidth - 1 }
+    IncrementFieldHeight ->
+      if model.fieldHeight > 30 then model
+      else { model | fieldHeight = model.fieldHeight + 1 }
+    DecrementFieldHeight ->
+      if model.fieldHeight == 1 then model
+      else { model | fieldHeight = model.fieldHeight - 1 }
 
 view : Model -> Html Msg
 view model = div [id "main"] [
-  div [id "field", class "contentblob"] [],
+  div [id "field", class "contentblob"] [
+    generateGrid (model.fieldHeight, model.fieldWidth)
+  ],
   div [id "controls", class "contentblob"]
-    [ label [] [
-      text "Field Height", 
-      input [ onInput UpdateFieldHeight, type_ "number",  value model.fieldHeight] []]
-    , label [] [
-      text "Field Width"
-    , input [ onInput UpdateFieldWidth, type_ "number",  value model.fieldWidth ] []
+    [ 
+      label [] [
+      text "Field Width", 
+      div [] [
+        button [ onClick DecrementFieldWidth ] [text "-"],
+        text  (String.fromInt model.fieldWidth),
+        button [ onClick IncrementFieldWidth ] [text "+"]
+      ]
     ]
+    , label [] [
+      text "Field Height", 
+      div [] [
+        button [ onClick DecrementFieldHeight ] [text "-"],
+        text  (String.fromInt model.fieldHeight),
+        button [ onClick IncrementFieldHeight ] [text "+"]
+      ]
+      ]
     ],
   div [
     id "info", 
     class "contentblob"] 
     [
-      div [] [ text "Heigth: ", text (model.fieldHeight) ]
-      , div [] [ text "Width: ", text (model.fieldWidth) ]
+      div [] [ text "Heigth: ", text (String.fromInt model.fieldHeight) ]
+      , div [] [ text "Width: ", text (String.fromInt model.fieldWidth) ]
     ]]
 
+-- controllerpm: String -> Html
+-- controllerpm fieldName = 
+--   div [] [
+--     button [ onClick decrementField fieldName ] [text "-"],
+--     text  field fieldHeight model,
+--     button [ onClick incrementField fieldName ] [text "+"],
+--   ]
+
+generateGrid:  (Int, Int) -> Html Msg
+generateGrid (heigth, width) = 
+  ul [] (List.repeat heigth (
+    li [] (List.repeat width (div [][ text "+" ]))
+  ))
+
+
+
+main : Program () Model Msg
+main =
+    Browser.sandbox
+        { init = initialModel
+        , view = view
+        , update = update
+        }

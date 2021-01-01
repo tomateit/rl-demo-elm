@@ -4355,7 +4355,7 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$Main$init = {fieldHeight: '4', fieldWidth: '6'};
+var $author$project$Main$initialModel = {fieldHeight: 4, fieldWidth: 6};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5168,24 +5168,30 @@ var $elm$browser$Browser$sandbox = function (impl) {
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'UpdateFieldWidth') {
-			var newWidth = msg.a;
-			return _Utils_update(
-				model,
-				{fieldWidth: newWidth});
-		} else {
-			var newHeight = msg.a;
-			return _Utils_update(
-				model,
-				{fieldHeight: newHeight});
+		switch (msg.$) {
+			case 'IncrementFieldWidth':
+				return (model.fieldWidth > 30) ? model : _Utils_update(
+					model,
+					{fieldWidth: model.fieldWidth + 1});
+			case 'DecrementFieldWidth':
+				return (model.fieldWidth === 1) ? model : _Utils_update(
+					model,
+					{fieldWidth: model.fieldWidth - 1});
+			case 'IncrementFieldHeight':
+				return (model.fieldHeight > 30) ? model : _Utils_update(
+					model,
+					{fieldHeight: model.fieldHeight + 1});
+			default:
+				return (model.fieldHeight === 1) ? model : _Utils_update(
+					model,
+					{fieldHeight: model.fieldHeight - 1});
 		}
 	});
-var $author$project$Main$UpdateFieldHeight = function (a) {
-	return {$: 'UpdateFieldHeight', a: a};
-};
-var $author$project$Main$UpdateFieldWidth = function (a) {
-	return {$: 'UpdateFieldWidth', a: a};
-};
+var $author$project$Main$DecrementFieldHeight = {$: 'DecrementFieldHeight'};
+var $author$project$Main$DecrementFieldWidth = {$: 'DecrementFieldWidth'};
+var $author$project$Main$IncrementFieldHeight = {$: 'IncrementFieldHeight'};
+var $author$project$Main$IncrementFieldWidth = {$: 'IncrementFieldWidth'};
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5196,47 +5202,73 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$html$Html$input = _VirtualDom_node('input');
-var $elm$html$Html$label = _VirtualDom_node('label');
-var $elm$html$Html$Events$alwaysStop = function (x) {
-	return _Utils_Tuple2(x, true);
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$Main$generateGrid = function (_v0) {
+	var heigth = _v0.a;
+	var width = _v0.b;
+	return A2(
+		$elm$html$Html$ul,
+		_List_Nil,
+		A2(
+			$elm$core$List$repeat,
+			heigth,
+			A2(
+				$elm$html$Html$li,
+				_List_Nil,
+				A2(
+					$elm$core$List$repeat,
+					width,
+					A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('+')
+							]))))));
 };
-var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 'MayStopPropagation', a: a};
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$html$Html$label = _VirtualDom_node('label');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
 };
 var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$stopPropagationOn = F2(
+var $elm$html$Html$Events$on = F2(
 	function (event, decoder) {
 		return A2(
 			$elm$virtual_dom$VirtualDom$on,
 			event,
-			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
 	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$at = F2(
-	function (fields, decoder) {
-		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
-	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $elm$html$Html$Events$targetValue = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['target', 'value']),
-	$elm$json$Json$Decode$string);
-var $elm$html$Html$Events$onInput = function (tagger) {
+var $elm$html$Html$Events$onClick = function (msg) {
 	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'input',
-		A2(
-			$elm$json$Json$Decode$map,
-			$elm$html$Html$Events$alwaysStop,
-			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
 };
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -5253,7 +5285,11 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Attributes$id('field'),
 						$elm$html$Html$Attributes$class('contentblob')
 					]),
-				_List_Nil),
+				_List_fromArray(
+					[
+						$author$project$Main$generateGrid(
+						_Utils_Tuple2(model.fieldHeight, model.fieldWidth))
+					])),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -5268,32 +5304,70 @@ var $author$project$Main$view = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Field Height'),
+								$elm$html$Html$text('Field Width'),
 								A2(
-								$elm$html$Html$input,
+								$elm$html$Html$div,
+								_List_Nil,
 								_List_fromArray(
 									[
-										$elm$html$Html$Events$onInput($author$project$Main$UpdateFieldHeight),
-										$elm$html$Html$Attributes$type_('number'),
-										$elm$html$Html$Attributes$value(model.fieldHeight)
-									]),
-								_List_Nil)
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Main$DecrementFieldWidth)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('-')
+											])),
+										$elm$html$Html$text(
+										$elm$core$String$fromInt(model.fieldWidth)),
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Main$IncrementFieldWidth)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('+')
+											]))
+									]))
 							])),
 						A2(
 						$elm$html$Html$label,
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Field Width'),
+								$elm$html$Html$text('Field Height'),
 								A2(
-								$elm$html$Html$input,
+								$elm$html$Html$div,
+								_List_Nil,
 								_List_fromArray(
 									[
-										$elm$html$Html$Events$onInput($author$project$Main$UpdateFieldWidth),
-										$elm$html$Html$Attributes$type_('number'),
-										$elm$html$Html$Attributes$value(model.fieldWidth)
-									]),
-								_List_Nil)
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Main$DecrementFieldHeight)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('-')
+											])),
+										$elm$html$Html$text(
+										$elm$core$String$fromInt(model.fieldHeight)),
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Main$IncrementFieldHeight)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('+')
+											]))
+									]))
 							]))
 					])),
 				A2(
@@ -5311,7 +5385,8 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text('Heigth: '),
-								$elm$html$Html$text(model.fieldHeight)
+								$elm$html$Html$text(
+								$elm$core$String$fromInt(model.fieldHeight))
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -5319,12 +5394,13 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text('Width: '),
-								$elm$html$Html$text(model.fieldWidth)
+								$elm$html$Html$text(
+								$elm$core$String$fromInt(model.fieldWidth))
 							]))
 					]))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
-	{init: $author$project$Main$init, update: $author$project$Main$update, view: $author$project$Main$view});
+	{init: $author$project$Main$initialModel, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
