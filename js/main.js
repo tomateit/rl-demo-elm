@@ -5202,7 +5202,6 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$core$List$repeatHelp = F3(
 	function (result, n, value) {
 		repeatHelp:
@@ -5226,29 +5225,31 @@ var $elm$core$List$repeat = F2(
 	});
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Main$generateGrid = function (_v0) {
 	var heigth = _v0.a;
 	var width = _v0.b;
 	return A2(
-		$elm$html$Html$ul,
-		_List_Nil,
+		$elm$core$List$repeat,
+		heigth,
 		A2(
-			$elm$core$List$repeat,
-			heigth,
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('fieldrow')
+				]),
 			A2(
-				$elm$html$Html$li,
-				_List_Nil,
+				$elm$core$List$repeat,
+				width,
 				A2(
-					$elm$core$List$repeat,
-					width,
-					A2(
-						$elm$html$Html$div,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('+')
-							]))))));
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('pad')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('[]')
+						])))));
 };
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $elm$html$Html$label = _VirtualDom_node('label');
@@ -5285,11 +5286,8 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Attributes$id('field'),
 						$elm$html$Html$Attributes$class('contentblob')
 					]),
-				_List_fromArray(
-					[
-						$author$project$Main$generateGrid(
-						_Utils_Tuple2(model.fieldHeight, model.fieldWidth))
-					])),
+				$author$project$Main$generateGrid(
+					_Utils_Tuple2(model.fieldHeight, model.fieldWidth))),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(

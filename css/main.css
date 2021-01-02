@@ -6,9 +6,13 @@
     'info info info';
 }
 
-#field {
-    grid-area: field;
+
+.contentblob {
+    padding: 10% 10%;
+    margin: 5px;
+    border: 2px solid grey;
 }
+
 
 #controls {
     grid-area: controls;
@@ -18,8 +22,22 @@
     grid-area: info;
 }
 
-.contentblob {
-    padding: 10% 10%;
-    margin: 5px;
+#field {
+    grid-area: field;
+    display: grid;
+    grid-auto-flow: dense;
+    justify-content: center;
+}
+
+.fieldrow {
+    display: flex;
+    justify-content: left;
+}
+
+.pad {
     border: 2px solid grey;
+    margin: 5px;
+    background-color: bisque;
+    padding: 5px;
+    max-width: 30px;
 }

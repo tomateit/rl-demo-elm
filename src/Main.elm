@@ -42,9 +42,9 @@ update msg model =
 
 view : Model -> Html Msg
 view model = div [id "main"] [
-  div [id "field", class "contentblob"] [
-    generateGrid (model.fieldHeight, model.fieldWidth)
-  ],
+  div [id "field", class "contentblob"] 
+    (generateGrid (model.fieldHeight, model.fieldWidth))
+  ,
   div [id "controls", class "contentblob"]
     [ 
       label [] [
@@ -80,11 +80,13 @@ view model = div [id "main"] [
 --     button [ onClick incrementField fieldName ] [text "+"],
 --   ]
 
-generateGrid:  (Int, Int) -> Html Msg
+generateGrid:  (Int, Int) -> List(Html Msg)
 generateGrid (heigth, width) = 
-  ul [] (List.repeat heigth (
-    li [] (List.repeat width (div [][ text "+" ]))
-  ))
+  List.repeat heigth (
+    div [class "fieldrow"] (
+      List.repeat width (div [class "pad"] [text "[]"])
+    )
+  )
 
 
 
