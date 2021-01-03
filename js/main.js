@@ -4355,7 +4355,89 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$Main$initialModel = {fieldHeight: 4, fieldWidth: 6};
+
+
+
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
+
+
+
+function _Time_now(millisToPosix)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(millisToPosix(Date.now())));
+	});
+}
+
+var _Time_setInterval = F2(function(interval, task)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		var id = setInterval(function() { _Scheduler_rawSpawn(task); }, interval);
+		return function() { clearInterval(id); };
+	});
+});
+
+function _Time_here()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(
+			A2($elm$time$Time$customZone, -(new Date().getTimezoneOffset()), _List_Nil)
+		));
+	});
+}
+
+
+function _Time_getZoneName()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		try
+		{
+			var name = $elm$time$Time$Name(Intl.DateTimeFormat().resolvedOptions().timeZone);
+		}
+		catch (e)
+		{
+			var name = $elm$time$Time$Offset(new Date().getTimezoneOffset());
+		}
+		callback(_Scheduler_succeed(name));
+	});
+}
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5144,51 +5226,429 @@ var $elm$core$Task$perform = F2(
 			$elm$core$Task$Perform(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
+var $elm$browser$Browser$element = _Browser_element;
+var $Punie$elm_matrix$Matrix$Matrix = function (a) {
+	return {$: 'Matrix', a: a};
+};
+var $Punie$elm_matrix$Matrix$decode = F2(
+	function (ncols, index) {
+		var r = index % ncols;
+		var q = (index / ncols) | 0;
+		return _Utils_Tuple2(q + 1, r + 1);
+	});
+var $Punie$elm_matrix$Matrix$initialize = F3(
+	function (nrows, ncols, f) {
+		var f_ = function (i) {
+			return f(
+				A2($Punie$elm_matrix$Matrix$decode, ncols, i));
+		};
+		var data = A2($elm$core$Array$initialize, nrows * ncols, f_);
+		return $Punie$elm_matrix$Matrix$Matrix(
+			{mvect: data, ncols: ncols, nrows: nrows});
+	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Main$initialModel = function (_v0) {
+	return _Utils_Tuple2(
+		{
+			fieldHeight: 4,
+			fieldWidth: 6,
+			state: A3(
+				$Punie$elm_matrix$Matrix$initialize,
+				4,
+				6,
+				function (_v1) {
+					return 0;
+				})
+		},
+		$elm$core$Platform$Cmd$none);
+};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $elm$browser$Browser$sandbox = function (impl) {
-	return _Browser_element(
-		{
-			init: function (_v0) {
-				return _Utils_Tuple2(impl.init, $elm$core$Platform$Cmd$none);
-			},
-			subscriptions: function (_v1) {
-				return $elm$core$Platform$Sub$none;
-			},
-			update: F2(
-				function (msg, model) {
-					return _Utils_Tuple2(
-						A2(impl.update, msg, model),
-						$elm$core$Platform$Cmd$none);
-				}),
-			view: impl.view
-		});
+var $author$project$Main$subscriptions = function (model) {
+	return $elm$core$Platform$Sub$none;
+};
+var $author$project$Main$NewRandomField = function (a) {
+	return {$: 'NewRandomField', a: a};
+};
+var $Punie$elm_matrix$Matrix$encode = F2(
+	function (ncols, _v0) {
+		var i = _v0.a;
+		var j = _v0.b;
+		return (((i - 1) * ncols) + j) - 1;
+	});
+var $Punie$elm_matrix$Matrix$itemAt = F2(
+	function (index, list) {
+		itemAt:
+		while (true) {
+			if (index < 0) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				if (!list.b) {
+					return $elm$core$Maybe$Nothing;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					if (!index) {
+						return $elm$core$Maybe$Just(x);
+					} else {
+						var $temp$index = index - 1,
+							$temp$list = xs;
+						index = $temp$index;
+						list = $temp$list;
+						continue itemAt;
+					}
+				}
+			}
+		}
+	});
+var $Punie$elm_matrix$Matrix$unsafeGetFromList = F2(
+	function (index, list) {
+		unsafeGetFromList:
+		while (true) {
+			var _v0 = A2($Punie$elm_matrix$Matrix$itemAt, index, list);
+			if (_v0.$ === 'Just') {
+				var value = _v0.a;
+				return value;
+			} else {
+				var $temp$index = index,
+					$temp$list = list;
+				index = $temp$index;
+				list = $temp$list;
+				continue unsafeGetFromList;
+			}
+		}
+	});
+var $Punie$elm_matrix$Matrix$fromList = F3(
+	function (n, m, list) {
+		return (_Utils_cmp(
+			$elm$core$List$length(list),
+			n * m) < 0) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+			A3(
+				$Punie$elm_matrix$Matrix$initialize,
+				n,
+				m,
+				function (i) {
+					return A2(
+						$Punie$elm_matrix$Matrix$unsafeGetFromList,
+						A2($Punie$elm_matrix$Matrix$encode, m, i),
+						list);
+				}));
+	});
+var $elm$random$Random$Generate = function (a) {
+	return {$: 'Generate', a: a};
+};
+var $elm$random$Random$Seed = F2(
+	function (a, b) {
+		return {$: 'Seed', a: a, b: b};
+	});
+var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var $elm$random$Random$next = function (_v0) {
+	var state0 = _v0.a;
+	var incr = _v0.b;
+	return A2($elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
+};
+var $elm$random$Random$initialSeed = function (x) {
+	var _v0 = $elm$random$Random$next(
+		A2($elm$random$Random$Seed, 0, 1013904223));
+	var state1 = _v0.a;
+	var incr = _v0.b;
+	var state2 = (state1 + x) >>> 0;
+	return $elm$random$Random$next(
+		A2($elm$random$Random$Seed, state2, incr));
+};
+var $elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
+};
+var $elm$time$Time$Offset = function (a) {
+	return {$: 'Offset', a: a};
+};
+var $elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var $elm$time$Time$customZone = $elm$time$Time$Zone;
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0.a;
+	return millis;
+};
+var $elm$random$Random$init = A2(
+	$elm$core$Task$andThen,
+	function (time) {
+		return $elm$core$Task$succeed(
+			$elm$random$Random$initialSeed(
+				$elm$time$Time$posixToMillis(time)));
+	},
+	$elm$time$Time$now);
+var $elm$random$Random$step = F2(
+	function (_v0, seed) {
+		var generator = _v0.a;
+		return generator(seed);
+	});
+var $elm$random$Random$onEffects = F3(
+	function (router, commands, seed) {
+		if (!commands.b) {
+			return $elm$core$Task$succeed(seed);
+		} else {
+			var generator = commands.a.a;
+			var rest = commands.b;
+			var _v1 = A2($elm$random$Random$step, generator, seed);
+			var value = _v1.a;
+			var newSeed = _v1.b;
+			return A2(
+				$elm$core$Task$andThen,
+				function (_v2) {
+					return A3($elm$random$Random$onEffects, router, rest, newSeed);
+				},
+				A2($elm$core$Platform$sendToApp, router, value));
+		}
+	});
+var $elm$random$Random$onSelfMsg = F3(
+	function (_v0, _v1, seed) {
+		return $elm$core$Task$succeed(seed);
+	});
+var $elm$random$Random$Generator = function (a) {
+	return {$: 'Generator', a: a};
+};
+var $elm$random$Random$map = F2(
+	function (func, _v0) {
+		var genA = _v0.a;
+		return $elm$random$Random$Generator(
+			function (seed0) {
+				var _v1 = genA(seed0);
+				var a = _v1.a;
+				var seed1 = _v1.b;
+				return _Utils_Tuple2(
+					func(a),
+					seed1);
+			});
+	});
+var $elm$random$Random$cmdMap = F2(
+	function (func, _v0) {
+		var generator = _v0.a;
+		return $elm$random$Random$Generate(
+			A2($elm$random$Random$map, func, generator));
+	});
+_Platform_effectManagers['Random'] = _Platform_createManager($elm$random$Random$init, $elm$random$Random$onEffects, $elm$random$Random$onSelfMsg, $elm$random$Random$cmdMap);
+var $elm$random$Random$command = _Platform_leaf('Random');
+var $elm$random$Random$generate = F2(
+	function (tagger, generator) {
+		return $elm$random$Random$command(
+			$elm$random$Random$Generate(
+				A2($elm$random$Random$map, tagger, generator)));
+	});
+var $elm$random$Random$listHelp = F4(
+	function (revList, n, gen, seed) {
+		listHelp:
+		while (true) {
+			if (n < 1) {
+				return _Utils_Tuple2(revList, seed);
+			} else {
+				var _v0 = gen(seed);
+				var value = _v0.a;
+				var newSeed = _v0.b;
+				var $temp$revList = A2($elm$core$List$cons, value, revList),
+					$temp$n = n - 1,
+					$temp$gen = gen,
+					$temp$seed = newSeed;
+				revList = $temp$revList;
+				n = $temp$n;
+				gen = $temp$gen;
+				seed = $temp$seed;
+				continue listHelp;
+			}
+		}
+	});
+var $elm$random$Random$list = F2(
+	function (n, _v0) {
+		var gen = _v0.a;
+		return $elm$random$Random$Generator(
+			function (seed) {
+				return A4($elm$random$Random$listHelp, _List_Nil, n, gen, seed);
+			});
+	});
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$xor = _Bitwise_xor;
+var $elm$random$Random$peel = function (_v0) {
+	var state = _v0.a;
+	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var $elm$random$Random$float = F2(
+	function (a, b) {
+		return $elm$random$Random$Generator(
+			function (seed0) {
+				var seed1 = $elm$random$Random$next(seed0);
+				var range = $elm$core$Basics$abs(b - a);
+				var n1 = $elm$random$Random$peel(seed1);
+				var n0 = $elm$random$Random$peel(seed0);
+				var lo = (134217727 & n1) * 1.0;
+				var hi = (67108863 & n0) * 1.0;
+				var val = ((hi * 134217728.0) + lo) / 9007199254740992.0;
+				var scaled = (val * range) + a;
+				return _Utils_Tuple2(
+					scaled,
+					$elm$random$Random$next(seed1));
+			});
+	});
+var $elm$random$Random$getByWeight = F3(
+	function (_v0, others, countdown) {
+		getByWeight:
+		while (true) {
+			var weight = _v0.a;
+			var value = _v0.b;
+			if (!others.b) {
+				return value;
+			} else {
+				var second = others.a;
+				var otherOthers = others.b;
+				if (_Utils_cmp(
+					countdown,
+					$elm$core$Basics$abs(weight)) < 1) {
+					return value;
+				} else {
+					var $temp$_v0 = second,
+						$temp$others = otherOthers,
+						$temp$countdown = countdown - $elm$core$Basics$abs(weight);
+					_v0 = $temp$_v0;
+					others = $temp$others;
+					countdown = $temp$countdown;
+					continue getByWeight;
+				}
+			}
+		}
+	});
+var $elm$core$List$sum = function (numbers) {
+	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
+};
+var $elm$random$Random$weighted = F2(
+	function (first, others) {
+		var normalize = function (_v0) {
+			var weight = _v0.a;
+			return $elm$core$Basics$abs(weight);
+		};
+		var total = normalize(first) + $elm$core$List$sum(
+			A2($elm$core$List$map, normalize, others));
+		return A2(
+			$elm$random$Random$map,
+			A2($elm$random$Random$getByWeight, first, others),
+			A2($elm$random$Random$float, 0, total));
+	});
+var $author$project$Main$randomFieldGenerator = function (count) {
+	return A2(
+		$elm$random$Random$list,
+		count,
+		A2(
+			$elm$random$Random$weighted,
+			_Utils_Tuple2(40, 1),
+			_List_fromArray(
+				[
+					_Utils_Tuple2(60, 0)
+				])));
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'IncrementFieldWidth':
-				return (model.fieldWidth > 30) ? model : _Utils_update(
-					model,
-					{fieldWidth: model.fieldWidth + 1});
+				return (model.fieldWidth > 30) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							fieldWidth: model.fieldWidth + 1,
+							state: A3(
+								$Punie$elm_matrix$Matrix$initialize,
+								model.fieldHeight,
+								model.fieldWidth + 1,
+								function (_v1) {
+									return 0;
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'DecrementFieldWidth':
-				return (model.fieldWidth === 1) ? model : _Utils_update(
-					model,
-					{fieldWidth: model.fieldWidth - 1});
+				return (model.fieldWidth === 1) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							fieldWidth: model.fieldWidth - 1,
+							state: A3(
+								$Punie$elm_matrix$Matrix$initialize,
+								model.fieldHeight,
+								model.fieldWidth - 1,
+								function (_v2) {
+									return 0;
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'IncrementFieldHeight':
-				return (model.fieldHeight > 30) ? model : _Utils_update(
+				var newHeigth = (model.fieldHeight < 30) ? (model.fieldHeight + 1) : model.fieldHeight;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							fieldHeight: newHeigth,
+							state: A3(
+								$Punie$elm_matrix$Matrix$initialize,
+								newHeigth,
+								model.fieldWidth,
+								function (_v3) {
+									return 0;
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'DecrementFieldHeight':
+				var newHeigth = (model.fieldHeight > 1) ? (model.fieldHeight - 1) : model.fieldHeight;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							fieldHeight: newHeigth,
+							state: A3(
+								$Punie$elm_matrix$Matrix$initialize,
+								newHeigth,
+								model.fieldWidth,
+								function (_v4) {
+									return 0;
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'GenerateNewFiels':
+				return _Utils_Tuple2(
 					model,
-					{fieldHeight: model.fieldHeight + 1});
+					A2(
+						$elm$random$Random$generate,
+						$author$project$Main$NewRandomField,
+						$author$project$Main$randomFieldGenerator(model.fieldHeight * model.fieldWidth)));
 			default:
-				return (model.fieldHeight === 1) ? model : _Utils_update(
-					model,
-					{fieldHeight: model.fieldHeight - 1});
+				var values = msg.a;
+				var w = model.fieldWidth;
+				var h = model.fieldHeight;
+				var maybeNewState = A3($Punie$elm_matrix$Matrix$fromList, h, w, values);
+				if (maybeNewState.$ === 'Just') {
+					var newState = maybeNewState.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{state: newState}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var $author$project$Main$DecrementFieldHeight = {$: 'DecrementFieldHeight'};
 var $author$project$Main$DecrementFieldWidth = {$: 'DecrementFieldWidth'};
+var $author$project$Main$GenerateNewFiels = {$: 'GenerateNewFiels'};
 var $author$project$Main$IncrementFieldHeight = {$: 'IncrementFieldHeight'};
 var $author$project$Main$IncrementFieldWidth = {$: 'IncrementFieldWidth'};
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -5202,54 +5662,192 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$core$List$repeatHelp = F3(
-	function (result, n, value) {
-		repeatHelp:
-		while (true) {
-			if (n <= 0) {
-				return result;
+var $elm$core$Elm$JsArray$map = _JsArray_map;
+var $elm$core$Array$map = F2(
+	function (func, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = function (node) {
+			if (node.$ === 'SubTree') {
+				var subTree = node.a;
+				return $elm$core$Array$SubTree(
+					A2($elm$core$Elm$JsArray$map, helper, subTree));
 			} else {
-				var $temp$result = A2($elm$core$List$cons, value, result),
-					$temp$n = n - 1,
-					$temp$value = value;
-				result = $temp$result;
-				n = $temp$n;
-				value = $temp$value;
-				continue repeatHelp;
+				var values = node.a;
+				return $elm$core$Array$Leaf(
+					A2($elm$core$Elm$JsArray$map, func, values));
+			}
+		};
+		return A4(
+			$elm$core$Array$Array_elm_builtin,
+			len,
+			startShift,
+			A2($elm$core$Elm$JsArray$map, helper, tree),
+			A2($elm$core$Elm$JsArray$map, func, tail));
+	});
+var $Punie$elm_matrix$Matrix$map = F2(
+	function (f, _v0) {
+		var m = _v0.a;
+		return $Punie$elm_matrix$Matrix$Matrix(
+			{
+				mvect: A2($elm$core$Array$map, f, m.mvect),
+				ncols: m.ncols,
+				nrows: m.nrows
+			});
+	});
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
+var $Punie$elm_matrix$Matrix$height = function (_v0) {
+	var nrows = _v0.a.nrows;
+	return nrows;
+};
+var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
+var $elm$core$Basics$ge = _Utils_ge;
+var $elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
+var $elm$core$Array$getHelp = F3(
+	function (shift, index, tree) {
+		getHelp:
+		while (true) {
+			var pos = $elm$core$Array$bitMask & (index >>> shift);
+			var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (_v0.$ === 'SubTree') {
+				var subTree = _v0.a;
+				var $temp$shift = shift - $elm$core$Array$shiftStep,
+					$temp$index = index,
+					$temp$tree = subTree;
+				shift = $temp$shift;
+				index = $temp$index;
+				tree = $temp$tree;
+				continue getHelp;
+			} else {
+				var values = _v0.a;
+				return A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, values);
 			}
 		}
 	});
-var $elm$core$List$repeat = F2(
-	function (n, value) {
-		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var $elm$core$Array$tailIndex = function (len) {
+	return (len >>> 5) << 5;
+};
+var $elm$core$Array$get = F2(
+	function (index, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? $elm$core$Maybe$Nothing : ((_Utils_cmp(
+			index,
+			$elm$core$Array$tailIndex(len)) > -1) ? $elm$core$Maybe$Just(
+			A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(
+			A3($elm$core$Array$getHelp, startShift, index, tree)));
 	});
+var $Punie$elm_matrix$Matrix$get = F3(
+	function (i, j, _v0) {
+		var nrows = _v0.a.nrows;
+		var ncols = _v0.a.ncols;
+		var mvect = _v0.a.mvect;
+		return ((_Utils_cmp(i, nrows) > 0) || (_Utils_cmp(j, ncols) > 0)) ? $elm$core$Maybe$Nothing : A2(
+			$elm$core$Array$get,
+			A2(
+				$Punie$elm_matrix$Matrix$encode,
+				ncols,
+				_Utils_Tuple2(i, j)),
+			mvect);
+	});
+var $Punie$elm_matrix$Matrix$unsafeGet = F3(
+	function (i, j, m) {
+		unsafeGet:
+		while (true) {
+			var _v0 = A3($Punie$elm_matrix$Matrix$get, i, j, m);
+			if (_v0.$ === 'Just') {
+				var v = _v0.a;
+				return v;
+			} else {
+				var $temp$i = i,
+					$temp$j = j,
+					$temp$m = m;
+				i = $temp$i;
+				j = $temp$j;
+				m = $temp$m;
+				continue unsafeGet;
+			}
+		}
+	});
+var $Punie$elm_matrix$Matrix$width = function (_v0) {
+	var ncols = _v0.a.ncols;
+	return ncols;
+};
+var $Punie$elm_matrix$Matrix$toLists = function (m) {
+	return A2(
+		$elm$core$List$concatMap,
+		function (i) {
+			return _List_fromArray(
+				[
+					A2(
+					$elm$core$List$concatMap,
+					function (j) {
+						return _List_fromArray(
+							[
+								A3($Punie$elm_matrix$Matrix$unsafeGet, i, j, m)
+							]);
+					},
+					A2(
+						$elm$core$List$range,
+						1,
+						$Punie$elm_matrix$Matrix$width(m)))
+				]);
+		},
+		A2(
+			$elm$core$List$range,
+			1,
+			$Punie$elm_matrix$Matrix$height(m)));
+};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$generateGrid = function (_v0) {
-	var heigth = _v0.a;
-	var width = _v0.b;
+var $author$project$Main$valToPad = function (val) {
 	return A2(
-		$elm$core$List$repeat,
-		heigth,
-		A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('fieldrow')
-				]),
-			A2(
-				$elm$core$List$repeat,
-				width,
-				A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('pad')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('[]')
-						])))));
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('pad')
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text(
+				'[' + ($elm$core$String$fromInt(val) + ']'))
+			]));
+};
+var $author$project$Main$wrapRow = function (pads) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('fieldrow')
+			]),
+		pads);
+};
+var $author$project$Main$generateGrid = function (state) {
+	return A2(
+		$elm$core$List$map,
+		$author$project$Main$wrapRow,
+		$Punie$elm_matrix$Matrix$toLists(
+			A2($Punie$elm_matrix$Matrix$map, $author$project$Main$valToPad, state)));
 };
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $elm$html$Html$label = _VirtualDom_node('label');
@@ -5270,6 +5868,41 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $Punie$elm_matrix$Matrix$prettyList = F2(
+	function (toString, list) {
+		if (!list.b) {
+			return '';
+		} else {
+			if (!list.b.b) {
+				var x = list.a;
+				return toString(x);
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				return toString(x) + (', ' + A2($Punie$elm_matrix$Matrix$prettyList, toString, xs));
+			}
+		}
+	});
+var $Punie$elm_matrix$Matrix$prettyPrint = F2(
+	function (toString, list) {
+		if (!list.b) {
+			return '';
+		} else {
+			if (!list.b.b) {
+				var x = list.a;
+				return '[ ' + (A2($Punie$elm_matrix$Matrix$prettyList, toString, x) + ' ]');
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				return '[ ' + (A2($Punie$elm_matrix$Matrix$prettyList, toString, x) + (' ]\n, ' + A2($Punie$elm_matrix$Matrix$prettyPrint, toString, xs)));
+			}
+		}
+	});
+var $Punie$elm_matrix$Matrix$pretty = F2(
+	function (toString, m) {
+		var list = $Punie$elm_matrix$Matrix$toLists(m);
+		return '[ ' + (A2($Punie$elm_matrix$Matrix$prettyPrint, toString, list) + ' ]');
+	});
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -5286,8 +5919,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Attributes$id('field'),
 						$elm$html$Html$Attributes$class('contentblob')
 					]),
-				$author$project$Main$generateGrid(
-					_Utils_Tuple2(model.fieldHeight, model.fieldWidth))),
+				$author$project$Main$generateGrid(model.state)),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -5366,6 +5998,29 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$text('+')
 											]))
 									]))
+							])),
+						A2(
+						$elm$html$Html$label,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Seed'),
+								A2(
+								$elm$html$Html$div,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick($author$project$Main$GenerateNewFiels)
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Generate randoms')
+											]))
+									]))
 							]))
 					])),
 				A2(
@@ -5394,11 +6049,20 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$text('Width: '),
 								$elm$html$Html$text(
 								$elm$core$String$fromInt(model.fieldWidth))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('State: '),
+								$elm$html$Html$text(
+								A2($Punie$elm_matrix$Matrix$pretty, $elm$core$String$fromInt, model.state))
 							]))
 					]))
 			]));
 };
-var $author$project$Main$main = $elm$browser$Browser$sandbox(
-	{init: $author$project$Main$initialModel, update: $author$project$Main$update, view: $author$project$Main$view});
+var $author$project$Main$main = $elm$browser$Browser$element(
+	{init: $author$project$Main$initialModel, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
