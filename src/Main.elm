@@ -1,23 +1,29 @@
 module Main exposing (main)
 import Browser
-import Html exposing (Html, button, div, text, input, label, ul, li)
+import Html exposing (Html, button, div, text, input, label, ul, li, h3)
 import Html.Events exposing (onClick, onInput)
 import Html.Attributes exposing (attribute, class, id, type_, value)
 import Json.Encode exposing (encode)
 import Matrix exposing (Matrix, toList, fromList)
 import Random
+import Task
+import Time
 -- MODEL
 type alias Model = {
   fieldWidth: Int,
   fieldHeight: Int,
-  state: Matrix Int
+  state: Matrix Int,
+  time: Time.Posix,
+  acceleration: Int
   }
 
 initialModel : () -> (Model, Cmd Msg)
 initialModel _ = ({
   fieldHeight = 4,
   fieldWidth = 6,
-  state= Matrix.initialize 4 6 (\_ -> 0)
+  state = Matrix.initialize 4 6 (\_ -> 0),
+  time = Time.millisToPosix 0,
+  acceleration = 1
   },
   Cmd.none)
 
@@ -39,6 +45,7 @@ type Msg = IncrementFieldWidth
   | DecrementFieldHeight
   | NewRandomField (List Int)
   | GenerateNewFiels
+  | Tick Time.Posix
 
 randomFieldGenerator : Int -> Random.Generator (List Int)
 randomFieldGenerator count =
@@ -77,6 +84,10 @@ update msg model =
         case maybeNewState of 
           Just newState -> ({ model | state = newState}, Cmd.none)
           Nothing -> (model, Cmd.none)
+    Tick newTime ->
+      ( { model | time = newTime }
+      , Cmd.none
+      )
       
     
 
@@ -87,6 +98,7 @@ view model = div [id "main"] [
   ,
   div [id "controls", class "contentblob"]
     [ 
+      showTime model,
       label [] [
         text "Field Width", 
         div [] [
@@ -126,7 +138,14 @@ view model = div [id "main"] [
 --     text  field fieldHeight model,
 --     button [ onClick incrementField fieldName ] [text "+"],
 --   ]
-
+showTime : Model -> Html Msg
+showTime model =
+  let
+    hour   = String.fromInt (Time.toHour   Time.utc model.time)
+    minute = String.fromInt (Time.toMinute Time.utc model.time)
+    second = String.fromInt (Time.toSecond Time.utc model.time)
+  in
+  h3 [] [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
 generateGrid:  Matrix Int -> List(Html Msg)
 generateGrid state = 
   (Matrix.map valToPad state) |> Matrix.toLists |> (List.map wrapRow)
@@ -141,7 +160,7 @@ wrapRow pads =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  Time.every 1000 Tick
 main : Program () Model Msg
 main =
     Browser.element
