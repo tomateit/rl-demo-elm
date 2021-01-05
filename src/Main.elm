@@ -8,13 +8,17 @@ import Matrix exposing (Matrix, toList, fromList)
 import Random
 import Task
 import Time
+import Task exposing (map)
+import String exposing (join)
+import Json.Decode exposing (maybe)
 -- MODEL
 type alias Model = {
   fieldWidth: Int,
   fieldHeight: Int,
   state: Matrix Int,
   time: Time.Posix,
-  acceleration: Int
+  acceleration: Int,
+  agentPosition: (Int, Int)
   }
 
 initialModel : () -> (Model, Cmd Msg)
@@ -23,9 +27,10 @@ initialModel _ = ({
   fieldWidth = 6,
   state = Matrix.initialize 4 6 (\_ -> 0),
   time = Time.millisToPosix 0,
-  acceleration = 1
+  acceleration = 1,
+  agentPosition = (0, 0)
   },
-  Cmd.none)
+  Random.generate SetNewAgentPosition (randomPositionGenerator 4 6))
 
 -- init : () -> (Model, Cmd Msg)
 -- init _ =
@@ -35,18 +40,20 @@ initialModel _ = ({
 --       , expect = Http.expectString GotText
 --       }
 --   )
-
--- randomInitializer : Int -> Random.Generator (List Int)
--- randomInitializer count =
---     Random. count (int 0 1)
 type Msg = IncrementFieldWidth 
   | DecrementFieldWidth
   | IncrementFieldHeight
   | DecrementFieldHeight
-  | NewRandomField (List Int)
-  | GenerateNewFiels
+  | SetNewRandomField (List Int)
+  | SetNewAgentPosition (Int, Int)
+  | GenerateAgentPosition
+  | GenerateNewFields
   | Tick Time.Posix
 
+
+randomPositionGenerator : Int -> Int -> Random.Generator (Int, Int)
+randomPositionGenerator heigth width =
+   Random.pair (Random.int 0 heigth) (Random.int 0 width)
 randomFieldGenerator : Int -> Random.Generator (List Int)
 randomFieldGenerator count =
   Random.list count (Random.weighted (40, 1) [ (60, 0)])
@@ -76,16 +83,18 @@ update msg model =
       ({ model | fieldHeight = newHeigth
       , state = (Matrix.initialize (newHeigth) model.fieldWidth (\_ -> 0))
        }, Cmd.none)
-    GenerateNewFiels -> (model, Random.generate NewRandomField (randomFieldGenerator (model.fieldHeight*model.fieldWidth) ))
-    NewRandomField values -> let h = model.fieldHeight
-                                 w = model.fieldWidth 
-                                 maybeNewState = Matrix.fromList h w values
+    GenerateNewFields -> (model, Random.generate SetNewRandomField (randomFieldGenerator (model.fieldHeight*model.fieldWidth) ))
+    GenerateAgentPosition -> (model, Random.generate SetNewAgentPosition (randomPositionGenerator model.fieldHeight model.fieldWidth))
+    SetNewRandomField values -> let h = model.fieldHeight
+                                    w = model.fieldWidth 
+                                    maybeNewState = Matrix.fromList h w values
       in 
         case maybeNewState of 
           Just newState -> ({ model | state = newState}, Cmd.none)
           Nothing -> (model, Cmd.none)
+    SetNewAgentPosition (row, col) -> ({model| agentPosition = (row, col)}, Cmd.none)
     Tick newTime ->
-      ( { model | time = newTime }
+      ( moveAgent model newTime
       , Cmd.none
       )
       
@@ -118,7 +127,13 @@ view model = div [id "main"] [
     , label [] [
         text "Seed", 
         div [] [
-          button [ onClick GenerateNewFiels ] [text "Generate randoms"]
+          button [ onClick GenerateNewFields ] [text "Generate randoms"]
+        ]
+      ]
+      , label [] [
+        text "New agent position", 
+        div [] [
+          button [ onClick GenerateAgentPosition ] [text "Randoms"]
         ]
       ]
     ],
@@ -129,6 +144,7 @@ view model = div [id "main"] [
       div [] [ text "Heigth: ", text (String.fromInt model.fieldHeight) ]
       , div [] [ text "Width: ", text (String.fromInt model.fieldWidth) ]
       , div [] [ text "State: ", text (Matrix.pretty String.fromInt model.state) ]
+      , div [] [ text "Position: ", text (Debug.toString model.agentPosition ) ]
     ]]
 
 -- controllerpm: String -> Html
@@ -138,6 +154,19 @@ view model = div [id "main"] [
 --     text  field fieldHeight model,
 --     button [ onClick incrementField fieldName ] [text "+"],
 --   ]
+moveAgent : Model -> Time.Posix -> Model
+moveAgent model newTime = let
+                            newAgentPosition = (2, 3)
+                            matrixlist = Matrix.toLists model.state
+    
+                            maybeNewState = Matrix.fromLists matrixlist
+                          in
+                            case maybeNewState of 
+                              Just newState ->
+                                  { model | time = newTime, agentPosition = newAgentPosition, state = newState }
+                              Nothing -> { model | time = newTime }
+
+
 showTime : Model -> Html Msg
 showTime model =
   let
