@@ -11,10 +11,11 @@ import Time
 import Task exposing (map)
 import String exposing (join)
 import Json.Decode exposing (maybe)
+-- import Grid exposing (..)
 -- MODEL
+
 type alias Model = {
-  fieldWidth: Int,
-  fieldHeight: Int,
+  gridSize: GridSize,
   state: Matrix Int,
   time: Time.Posix,
   acceleration: Int,
@@ -175,8 +176,8 @@ showTime model =
     second = String.fromInt (Time.toSecond Time.utc model.time)
   in
   h3 [] [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
-generateGrid:  Matrix Int -> List(Html Msg)
-generateGrid state = 
+show:  Grid Int -> List(Html Msg)
+show state = 
   (Matrix.map valToPad state) |> Matrix.toLists |> (List.map wrapRow)
 
 valToPad: Int -> Html Msg
