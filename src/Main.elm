@@ -4,7 +4,6 @@ import Html exposing (Html, button, div, text, input, label, ul, li, h3)
 import Html.Events exposing (onClick, onInput)
 import Html.Attributes exposing (attribute, class, id, type_, value)
 import Json.Encode exposing (encode)
-import Matrix exposing (Matrix, toList, fromList)
 import Random
 import Task
 import Time
@@ -16,7 +15,7 @@ import Json.Decode exposing (maybe)
 
 type alias Model = {
   gridSize: GridSize,
-  state: Matrix Int,
+  state: Grid Int,
   time: Time.Posix,
   acceleration: Int,
   agentPosition: (Int, Int)
@@ -24,8 +23,7 @@ type alias Model = {
 
 initialModel : () -> (Model, Cmd Msg)
 initialModel _ = ({
-  fieldHeight = 4,
-  fieldWidth = 6,
+  gridSize = (4, 6),
   state = Matrix.initialize 4 6 (\_ -> 0),
   time = Time.millisToPosix 0,
   acceleration = 1,
@@ -55,6 +53,7 @@ type Msg = IncrementFieldWidth
 randomPositionGenerator : Int -> Int -> Random.Generator (Int, Int)
 randomPositionGenerator heigth width =
    Random.pair (Random.int 0 heigth) (Random.int 0 width)
+   
 randomFieldGenerator : Int -> Random.Generator (List Int)
 randomFieldGenerator count =
   Random.list count (Random.weighted (40, 1) [ (60, 0)])
@@ -86,9 +85,9 @@ update msg model =
        }, Cmd.none)
     GenerateNewFields -> (model, Random.generate SetNewRandomField (randomFieldGenerator (model.fieldHeight*model.fieldWidth) ))
     GenerateAgentPosition -> (model, Random.generate SetNewAgentPosition (randomPositionGenerator model.fieldHeight model.fieldWidth))
-    SetNewRandomField values -> let h = model.fieldHeight
-                                    w = model.fieldWidth 
-                                    maybeNewState = Matrix.fromList h w values
+    SetNewRandomField values -> let h = first model.gridSize
+                                    w = second model.gridSize 
+                                    maybeNewState = Grid.fromList h w values
       in 
         case maybeNewState of 
           Just newState -> ({ model | state = newState}, Cmd.none)

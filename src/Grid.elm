@@ -1,21 +1,17 @@
 module Grid exposing
     ( Grid
     , GridSize
-    , Action
     , from
     , set
     , canGo
     )
 
-import Agent exposing (..)
-import Html.Attributes exposing (action)
+import Agent exposing (Action)
 import Tuple exposing (first, second)
 
 type alias Grid a = List (List a)
 type alias GridSize = (Int, Int)
 
-type Action
-    = GoLeft | GoUp | GoRigth | GoDown
 
 
 from : (Int, Int) -> Grid Int
