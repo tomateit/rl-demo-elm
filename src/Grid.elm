@@ -22,9 +22,9 @@ from (h, w) =
     (List.repeat h << List.repeat w) 0
 
 
-set : a -> Int -> Int -> Grid a -> Grid a
-set v x y =
-    at y <| at x <| always v
+set : a -> GridPosition -> Grid a -> Grid a
+set value position =
+    at (first position) <| at (second position) <| always value
 
 
 at : Int -> (a -> a) -> List a -> List a
