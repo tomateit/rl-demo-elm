@@ -1,20 +1,31 @@
-module Agent exposing (Agent, AgentPosition, Action)
-import Grid exposing (canGo)
-import Html.Attributes exposing (action)
+module Agent exposing (Agent, go)
+import Grid exposing (Action(..))
+import Tuple exposing (first, second)
+
+type alias GridPosition = (Int, Int)
 type alias Agent = {
     health: Int,
-    position: AgentPosition,
+    position: GridPosition,
     epsilon: Float, --exploration factor
     lr: Float -- learning rate
     }
 
 
-type Action
-    = GoLeft | GoUp | GoRigth | GoDown
 
-type alias AgentPosition = (Int, Int)
 
-go: AgentPosition -> Action -> AgentPosition
+-- moveAgent : Model -> Time.Posix -> Model
+-- moveAgent model newTime = let
+--                             newAgentPosition = (2, 3)
+--                             matrixlist = Matrix.toLists model.state
+    
+--                             maybeNewState = Matrix.fromLists matrixlist
+--                           in
+--                             case maybeNewState of 
+--                               Just newState ->
+--                                   { model | time = newTime, agentPosition = newAgentPosition, state = newState }
+--                               Nothing -> { model | time = newTime }
+
+go: GridPosition -> Action -> GridPosition
 go position action = 
     case action of 
         GoDown -> (first position + 1, second position)
